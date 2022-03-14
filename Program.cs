@@ -3,7 +3,7 @@
 Console.WriteLine("Nazwa pliku wejściowego: ");
 string? fileName = Console.ReadLine();
 
-if (File.Exists(fileName) || fileName is "output.sc" or null)
+if (!File.Exists(fileName) || fileName is "output.sc" or null)
 {
     throw new ArgumentNullException();
 }
