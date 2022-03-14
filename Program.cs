@@ -34,6 +34,7 @@ catch (FormatException)
     }
 }
 
+bool grupaObiektow = false;
 foreach (string line in File.ReadLines(fileName))
 {
     using StreamWriter file = new("output.sc", append: true);
@@ -45,7 +46,12 @@ foreach (string line in File.ReadLines(fileName))
         continue;
     }
 
-    if (lineArr[0] is "Track" or "TrackObject" or "Misc" or "MiscGroup" or "TerrainPoint" or "Wires")
+    if (lineArr[0] is "EndMiscGroup")
+    {
+        grupaObiektow = false;
+    }
+
+    if ((lineArr[0] is "Track" or "TrackObject" or "Misc" or "MiscGroup" or "TerrainPoint" or "Wires") && !grupaObiektow)
     {
         var ci = new CultureInfo("en-US").NumberFormat;
         lineArr[3] = (float.Parse(lineArr[3], ci) * (1 + skala / 100)).ToString("F4", ci);
@@ -53,6 +59,11 @@ foreach (string line in File.ReadLines(fileName))
     }
 
     await file.WriteLineAsync(string.Join(';', lineArr));
+
+    if (lineArr[0] is "MiscGroup")
+    {
+        grupaObiektow = true;
+    }
 }
 
 Console.WriteLine("Done.");
