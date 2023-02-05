@@ -99,14 +99,26 @@ foreach (string line in File.ReadLines(fileName))
         grupaObiektow = false;
     }
 
-    if ((lineArr[0] is "Track" or "TrackObject" or "TrackStructure" or "Misc" or "MiscGroup" or "TerrainPoint" or "Wires") && !grupaObiektow)
+    if ((lineArr[0] is "Track" or "TrackObject" or "TrackStructure" or "Misc" or "MiscGroup" or "TerrainPoint"
+            or "Wires") && !grupaObiektow)
     {
         if (lineArr[2] is not "#Geoportal")
         {
-            var ci = new CultureInfo("en-US").NumberFormat;
-            lineArr[3] = (float.Parse(lineArr[3], ci) * (1 + skala / 100) + przesuniecieX).ToString("F4", ci);
-            lineArr[4] = (float.Parse(lineArr[4], ci) + przesuniecieZ).ToString("F4", ci);
-            lineArr[5] = (float.Parse(lineArr[5], ci) * (1 + skala / 100) + przesuniecieY).ToString("F4", ci);
+            przesuniecieX = 0;
+            przesuniecieZ = 0;
+            przesuniecieY = 0;
+        }
+
+        var ci = new CultureInfo("en-US").NumberFormat;
+        lineArr[3] = (float.Parse(lineArr[3], ci) * (1 + skala / 100) + przesuniecieX).ToString("F4", ci);
+        lineArr[4] = (float.Parse(lineArr[4], ci) + przesuniecieZ).ToString("F4", ci);
+        lineArr[5] = (float.Parse(lineArr[5], ci) * (1 + skala / 100) + przesuniecieY).ToString("F4", ci);
+
+        if (lineArr[2] is "BTrack")
+        {
+            lineArr[9] = (float.Parse(lineArr[9], ci) * (1 + skala / 100) + przesuniecieX).ToString("F4", ci);
+            lineArr[9] = (float.Parse(lineArr[9], ci) + przesuniecieZ).ToString("F4", ci);
+            lineArr[11] = (float.Parse(lineArr[11], ci) * (1 + skala / 100) + przesuniecieY).ToString("F4", ci);
         }
     }
 
