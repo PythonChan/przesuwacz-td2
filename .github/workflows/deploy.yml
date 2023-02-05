@@ -18,7 +18,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet publish przesuwacz.sln --output package --runtime win-x64 -p:PublishSingleFile=true --self-contained false
+      run: dotnet publish przesuwacz.sln --output package --runtime win-x64 -p:PublishSingleFile=true --self-contained true -p:PublishTrimmed=true
     - name: Test
       run: dotnet test --no-build --verbosity normal
     - name: Release name generation v1
