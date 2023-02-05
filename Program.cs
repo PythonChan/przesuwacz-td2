@@ -8,29 +8,77 @@ if (!File.Exists(fileName) || fileName is "output.sc" or null)
     throw new ArgumentNullException();
 }
 
-Console.WriteLine("Skala w procentach: ");
-string? skalaStr = Console.ReadLine();
+Console.WriteLine("Skalowanie [S] czy przesuwanie [P]");
+string? selection = Console.ReadLine();
 
-if (skalaStr is null)
+if (selection is null or not ("S" or "P"))
 {
     throw new ArgumentNullException();
 }
 
-float skala;
+float skala = 1;
+float przesuniecieX = 0;
+float przesuniecieZ = 0;
+float przesuniecieY = 0;
 
-try
+if (selection is "S")
 {
-    skala = float.Parse(skalaStr);
-}
-catch (FormatException)
-{
+    Console.WriteLine("Skala w procentach: ");
+    string? skalaStr = Console.ReadLine();
+
+    if (skalaStr is null)
+    {
+        throw new ArgumentNullException();
+    }
+
     try
     {
-        skala = float.Parse(skalaStr, new CultureInfo("en-US").NumberFormat);
+        skala = float.Parse(skalaStr);
     }
-    catch
+    catch (FormatException)
     {
-        throw new ArgumentException();
+        try
+        {
+            skala = float.Parse(skalaStr, new CultureInfo("en-US").NumberFormat);
+        }
+        catch
+        {
+            throw new ArgumentException();
+        }
+    }
+}
+else
+{
+    Console.WriteLine("Przesunięcie X: ");
+    string? przesuniecieXStr = Console.ReadLine();
+    Console.WriteLine("Przesunięcie Z: ");
+    string? przesuniecieZStr = Console.ReadLine();
+    Console.WriteLine("Przesunięcie Y: ");
+    string? przesuniecieYStr = Console.ReadLine();
+
+    if (przesuniecieXStr is null || przesuniecieZStr is null || przesuniecieYStr is null)
+    {
+        throw new ArgumentNullException();
+    }
+
+    try
+    {
+        przesuniecieX = float.Parse(przesuniecieXStr);
+        przesuniecieZ = float.Parse(przesuniecieZStr);
+        przesuniecieY = float.Parse(przesuniecieYStr);
+    }
+    catch (FormatException)
+    {
+        try
+        {
+            przesuniecieX = float.Parse(przesuniecieXStr, new CultureInfo("en-US").NumberFormat);
+            przesuniecieZ = float.Parse(przesuniecieZStr, new CultureInfo("en-US").NumberFormat);
+            przesuniecieY = float.Parse(przesuniecieYStr, new CultureInfo("en-US").NumberFormat);
+        }
+        catch
+        {
+            throw new ArgumentException();
+        }
     }
 }
 
@@ -51,11 +99,12 @@ foreach (string line in File.ReadLines(fileName))
         grupaObiektow = false;
     }
 
-    if ((lineArr[0] is "Track" or "TrackObject" or "Misc" or "MiscGroup" or "TerrainPoint" or "Wires") && !grupaObiektow)
+    if ((lineArr[0] is "Track" or "TrackObject" or "TrackStructure" or "Misc" or "MiscGroup" or "TerrainPoint" or "Wires") && !grupaObiektow)
     {
-        var ci = new CultureInfo("en-US").NumberFormat;
-        lineArr[3] = (float.Parse(lineArr[3], ci) * (1 + skala / 100)).ToString("F4", ci);
-        lineArr[5] = (float.Parse(lineArr[5], ci) * (1 + skala / 100)).ToString("F4", ci);
+            var ci = new CultureInfo("en-US").NumberFormat;
+            lineArr[3] = (float.Parse(lineArr[3], ci) * (1 + skala / 100) + przesuniecieX).ToString("F4", ci);
+            lineArr[4] = (float.Parse(lineArr[4], ci) + przesuniecieZ).ToString("F4", ci);
+            lineArr[5] = (float.Parse(lineArr[5], ci) * (1 + skala / 100) + przesuniecieY).ToString("F4", ci);
     }
 
     await file.WriteLineAsync(string.Join(';', lineArr));
