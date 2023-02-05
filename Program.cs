@@ -82,7 +82,13 @@ else
     }
 }
 
+Console.WriteLine();
+
 bool objectGroup = false;
+int createdLines = 0;
+int lastDisplayedHashtag = 0;
+
+int fileLength = File.ReadLines(fileName).Count();
 foreach (string line in File.ReadLines(fileName))
 {
     using StreamWriter file = new("output.sc", append: true);
@@ -109,7 +115,7 @@ foreach (string line in File.ReadLines(fileName))
             translationY = 0;
         }
 
-        var ci = new CultureInfo("en-US").NumberFormat;
+        NumberFormatInfo ci = new CultureInfo("en-US").NumberFormat;
         lineArr[3] = (float.Parse(lineArr[3], ci) * (1 + scale / 100) + translationX).ToString("F4", ci);
         lineArr[4] = (float.Parse(lineArr[4], ci) + translationZ).ToString("F4", ci);
         lineArr[5] = (float.Parse(lineArr[5], ci) * (1 + scale / 100) + translationY).ToString("F4", ci);
@@ -123,6 +129,19 @@ foreach (string line in File.ReadLines(fileName))
     }
 
     await file.WriteLineAsync(string.Join(';', lineArr));
+    ++createdLines;
+
+    // Displaying progress bar
+    if (createdLines * 30 / fileLength > lastDisplayedHashtag)
+    {
+        ClearCurrentConsoleLine();
+        lastDisplayedHashtag = createdLines * 30 / fileLength;
+        Console.Write($"{createdLines * 100 / fileLength}%   ");
+        for (int i = 0; i <= lastDisplayedHashtag; ++i)
+        {
+            Console.Write("#");
+        }
+    }
 
     if (lineArr[0] is "MiscGroup")
     {
@@ -130,5 +149,13 @@ foreach (string line in File.ReadLines(fileName))
     }
 }
 
-Console.WriteLine("Done.");
+Console.WriteLine("\n\nDone.");
 Console.ReadLine();
+
+void ClearCurrentConsoleLine()
+{
+    int currentLineCursor = Console.CursorTop;
+    Console.SetCursorPosition(0, Console.CursorTop);
+    Console.Write(new string(' ', Console.WindowWidth));
+    Console.SetCursorPosition(0, currentLineCursor);
+}
