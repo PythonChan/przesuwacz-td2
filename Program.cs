@@ -16,7 +16,7 @@ if (selection is null or not ("S" or "P"))
     throw new ArgumentNullException();
 }
 
-float scale = 1;
+float scale = 100;
 float translationX = 0;
 float translationZ = 0;
 float translationY = 0;
@@ -116,15 +116,21 @@ foreach (string line in File.ReadLines(fileName))
         }
 
         NumberFormatInfo ci = new CultureInfo("en-US").NumberFormat;
-        lineArr[3] = (float.Parse(lineArr[3], ci) * (1 + scale / 100) + translationX).ToString("F4", ci);
-        lineArr[4] = (float.Parse(lineArr[4], ci) + translationZ).ToString("F4", ci);
-        lineArr[5] = (float.Parse(lineArr[5], ci) * (1 + scale / 100) + translationY).ToString("F4", ci);
+        lineArr[3] = (float.Parse(lineArr[3], ci) * (scale / 100) + translationX).ToString("F4", ci);
+        lineArr[4] = (float.Parse(lineArr[4], ci) * (scale / 100) + translationZ).ToString("F4", ci);
+        lineArr[5] = (float.Parse(lineArr[5], ci) * (scale / 100) + translationY).ToString("F4", ci);
 
         if (lineArr[2] is "BTrack")
         {
-            lineArr[9] = (float.Parse(lineArr[9], ci) * (1 + scale / 100) + translationX).ToString("F4", ci);
-            lineArr[9] = (float.Parse(lineArr[9], ci) + translationZ).ToString("F4", ci);
-            lineArr[11] = (float.Parse(lineArr[11], ci) * (1 + scale / 100) + translationY).ToString("F4", ci);
+            lineArr[9] = (float.Parse(lineArr[9], ci) * (scale / 100) + translationX).ToString("F4", ci);
+            lineArr[10] = (float.Parse(lineArr[10], ci) * (scale / 100) + translationZ).ToString("F4", ci);
+            lineArr[11] = (float.Parse(lineArr[11], ci) * (scale / 100) + translationY).ToString("F4", ci);
+        }
+
+        if (lineArr[2] is "Track")
+        {
+            lineArr[9] = (float.Parse(lineArr[9], ci) * (scale / 100)).ToString("F4", ci);
+            lineArr[10] = (float.Parse(lineArr[10], ci) * (scale / 100)).ToString("F4", ci);
         }
     }
 
